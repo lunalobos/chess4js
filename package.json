@@ -4,14 +4,19 @@
   "description": "A chess library for javascript",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
-  "keywords": ["chess"],
+  "keywords": [
+    "chess"
+  ],
   "author": "lunalobos",
   "license": "Apache-2.0",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lunalobos/chess4js.git"
+    "url": "https://github.com/lunalobos/e9939e34f1c04e01b2bbc42c131d1e8f.git"
+  },
+  "devDependencies": {
+    "mocha": "^11.7.1"
   }
 }
