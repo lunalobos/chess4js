@@ -1,3 +1,19 @@
+/*
+* Copyright 2025 Miguel Angel Luna Lobos
+* 
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*     http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
 import {
 	bitboardMask as mask,
 	numberOfTrailingZerosBigInt as trailingZeros,
@@ -16,29 +32,6 @@ import { Square } from "./Square.js";
  * and never modify the original object.
  */
 export class Bitboard {
-    /**
-     * Creates a new Bitboard instance from a binary string.
-     *
-     * @param {string} binaryString - A string representing the binary value of the bitboard.
-     * @return {Bitboard} A new Bitboard instance.
-     */
-    static fromString(binaryString) {
-        return new Bitboard(BigInt(binaryString));
-    }
-
-    /**
-     * Creates a new Bitboard from one or more Square objects.
-     *
-     * @param {...Square} squares - One or more Square instances.
-     * @return {Bitboard} A new Bitboard instance.
-     */
-    static fromSquares(...squares) {
-        return squares
-            .map((sq) => new Bitboard(1n << BigInt(sq.index())))
-            .reduce((prev, curr) => {
-                return curr.or(prev);
-            });
-    }
 
     /**
      * Constructs a new Bitboard.

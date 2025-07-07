@@ -2,6 +2,7 @@ import { equal } from "assert";
 import { squares } from "../src/squares.js";
 import { Move } from "../src/Move.js";
 import { pieces } from "../src/pieces.js";
+import { moveFromSquares, moveFromBitboard, moveFromUciString } from "../src/moves.js";
 
 const {
     A1, B1, C1, D1, E1, F1, G1, H1,
@@ -90,6 +91,55 @@ describe("Move", function () {
             let m1 = Move.fromSquares(E2, E4);
             equal(m1.equals(null), false);
             equal(m1.equals({}), false);
+        });
+    });
+});
+
+describe("Move factory", function () {
+    describe("moveFromSquares", function () {
+        it("should return the same Move instance for the same origin, target, and promotion", function () {
+            let m1 = moveFromSquares(E2, E4);
+            let m2 = moveFromSquares(E2, E4);
+            equal(m1, m2);
+        });
+        it("should return a Move with correct origin and target", function () {
+            let move = moveFromSquares(A2, A4);
+            equal(move.origin(), A2);
+            equal(move.target(), A4);
+        });
+        it("should return a Move with correct promotion piece", function () {
+            let move = moveFromSquares(A7, A8, WQ);
+            equal(move.promotionPiece(), WQ);
+        });
+    });
+
+    describe("moveFromUciString", function () {
+        it("should return the same Move instance as moveFromSquares for normal move", function () {
+            let m1 = moveFromUciString("e2e4", true);
+            let m2 = moveFromSquares(E2, E4);
+            equal(m1, m2);
+        });
+        it("should return the same Move instance as moveFromSquares for promotion move", function () {
+            let m1 = moveFromUciString("e7e8q", true);
+            let m2 = moveFromSquares(E7, E8, WQ);
+            equal(m1, m2);
+        });
+        it("should throw error for invalid UCI string", function () {
+            let threw = false;
+            try {
+                moveFromUciString("invalid", true);
+            } catch (e) {
+                threw = true;
+            }
+            equal(threw, true);
+        });
+    });
+
+    describe("moveFromBitboard", function () {
+        it("should return the same Move instance as moveFromSquares", function () {
+            let move = moveFromSquares(E2, E4);
+            let move2 = moveFromBitboard(move.moveBitboard(), move.origin());
+            equal(move, move2);
         });
     });
 });
