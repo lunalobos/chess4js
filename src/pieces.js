@@ -36,6 +36,7 @@ export const pieces = [
     return obj;
 }, {});
 
+
 export const {
     EMPTY, WP, WN, WB, WR, WQ, WK, BP, BN, BB, BR, BQ, BK
 } = pieces;

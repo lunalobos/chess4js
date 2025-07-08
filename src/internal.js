@@ -258,24 +258,3 @@ function formatUnsignedLong0(val, shift, buf, offset, len) {
 }
 
 export const uciRegex = /(?<colOrigin>[a-h])(?<rowOrigin>[1-8])(?<colTarget>[a-h])(?<rowTarget>[1-8])(?<promotion>[nbrq])?/;
-
-const cols = new Map();
-
-cols.set("a", 0);
-cols.set("b", 1);
-cols.set("c", 2);
-cols.set("d", 3);
-cols.set("e", 4);
-cols.set("f", 5);
-cols.set("g", 6);
-cols.set("h", 7);
-
-/**
- * Returns the 0-based index of the column corresponding to the given letter.
- *
- * @param {string} col - The column letter, e.g. "a", "b", etc.
- * @returns {number} The index of the column, from 0 (a) to 7 (h).
- */
-export function getColIndex(col){
-	return cols.get(col);
-}
