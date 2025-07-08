@@ -22,7 +22,6 @@ import {
 	numberOfLeadingZerosBigInt as leadingZeros,
 	toBinaryString,
 } from "./internal.js";
-import { Square } from "./Square.js";
 
 /**
  * Represents a bitboard, a compact representation of a chessboard using a 64-bit variable.
