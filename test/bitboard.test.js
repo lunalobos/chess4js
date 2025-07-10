@@ -1,52 +1,33 @@
-import { equal } from "assert";
+import test from "ava";
 import { squares } from "../src/squares.js";
 import {
-    bitboardFromBigInt,
-    bitboardFromBinaryString,
-    bitboardFromSquares
+  bitboardFromBigInt,
+  bitboardFromBinaryString,
+  bitboardFromSquares,
 } from "../src/bitboards.js";
 
-const {
-    A1, B1, C1, D1, E1, F1, G1, H1,
-    A2, B2, C2, D2, E2, F2, G2, H2,
-    A3, B3, C3, D3, E3, F3, G3, H3,
-    A4, B4, C4, D4, E4, F4, G4, H4,
-    A5, B5, C5, D5, E5, F5, G5, H5,
-    A6, B6, C6, D6, E6, F6, G6, H6,
-    A7, B7, C7, D7, E7, F7, G7, H7,
-    A8, B8, C8, D8, E8, F8, G8, H8
-} = squares;
+const { A1, B2, C3, D4, E5, F6, G7, H8 } = squares;
 
-describe("Bitboard test", function () {
-    describe("trailingZeros", function () {
-        let board = bitboardFromBigInt(8n);
-        let trailingZeros = board.trailingZeros();
+test("Bitboard trailingZeros should return 3 when value is 8", (t) => {
+  const board = bitboardFromBigInt(8n);
+  const trailingZeros = board.trailingZeros();
+  t.is(trailingZeros, 3);
+});
 
-        it("should return 3 when value is 8", function () {
-            equal(trailingZeros, 3);
-        });
-    });
-    describe("fromString", function () {
-        it("should create a Bitboard from a binary string", function () {
-            let board = bitboardFromBinaryString("0b1000");
-            equal(board.value(), 8n);
-        });
-    });
+test("Bitboard fromString should create a Bitboard from a binary string", (t) => {
+  let board = bitboardFromBinaryString("0b1000");
+  t.is(board.value(), 8n);
+});
 
-    describe("fromSquares", function () {
-        it("should create a Bitboard from multiple squares", function () {
-            let board = bitboardFromSquares(A1, H8);
-            equal(
-                board.value(),
-                (1n << BigInt(A1.index())) | (1n << BigInt(H8.index()))
-            );
-        });
-    });
+test("Bitboard fromSquares should create a Bitboard from multiple squares", (t) => {
+  const board = bitboardFromSquares(A1, H8);
+  t.is(board.value(), (1n << BigInt(A1.index())) | (1n << BigInt(H8.index())));
+});
 
-    describe("toString", function () {
-        let bitboard = bitboardFromSquares(A1, B2, C3, D4, E5, F6, G7, H8);
-        let str = bitboard.toString().trim();
-        let expected = `
+test("Bitboard toString should return expected string", (t) => {
+  const bitboard = bitboardFromSquares(A1, B2, C3, D4, E5, F6, G7, H8);
+  const str = bitboard.toString().trim();
+  const expected = `
 +---+---+---+---+---+---+---+---+ 
 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
 +---+---+---+---+---+---+---+---+ 
@@ -65,80 +46,63 @@ describe("Bitboard test", function () {
 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 +---+---+---+---+---+---+---+---+ 
 `.trim();
-        it("should return expected string", function () {
-            equal(str, expected);
-        });
-    });
+  t.is(str, expected);
+});
 
-    describe("and", function () {
-        it("should perform bitwise AND between two bitboards", function () {
-            let a = bitboardFromBigInt(0b1100n);
-            let b = bitboardFromBigInt(0b1010n);
-            equal(a.and(b).value(), 0b1000n);
-        });
-    });
+test("Bitboard and should perform bitwise AND between two bitboards", (t) => {
+  let a = bitboardFromBigInt(0b1100n);
+  let b = bitboardFromBigInt(0b1010n);
+  t.is(a.and(b).value(), 0b1000n);
+});
 
-    describe("or", function () {
-        it("should perform bitwise OR between two bitboards", function () {
-            let a = bitboardFromBigInt(0b1100n);
-            let b = bitboardFromBigInt(0b1010n);
-            equal(a.or(b).value(), 0b1110n);
-        });
-    });
+test("Bitboard or should perform bitwise OR between two bitboards", (t) => {
+  const a = bitboardFromBigInt(0b1100n);
+  const b = bitboardFromBigInt(0b1010n);
+  t.is(a.or(b).value(), 0b1110n);
+});
 
-    describe("xor", function () {
-        it("should perform bitwise XOR between two bitboards", function () {
-            let a = bitboardFromBigInt(0b1100n);
-            let b = bitboardFromBigInt(0b1010n);
-            equal(a.xor(b).value(), 0b0110n);
-        });
-    });
+test("Bitboard xor should perform bitwise XOR between two bitboards", (t) => {
+  const a = bitboardFromBigInt(0b1100n);
+  const b = bitboardFromBigInt(0b1010n);
+  t.is(a.xor(b).value(), 0b0110n);
+});
 
-    describe("not", function () {
-        it("should perform bitwise NOT on a bitboard", function () {
-            let a = bitboardFromBigInt(0b1n);
-            equal(
-                a.not().value(),
-                0b1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1110n
-            );
-        });
-    });
+test("Bitboard not should perform bitwise NOT on a bitboard", (t) => {
+  const a = bitboardFromBigInt(0b1n);
+  t.is(
+    a.not().value(),
+    0b1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1110n
+  );
+});
 
-    describe("bitCount", function () {
-        it("should count the number of set bits", function () {
-            let a = bitboardFromBigInt(0b1011n);
-            equal(a.bitCount(), 3);
-        });
-    });
+test("Bitboard bitCount should count the number of set bits", (t) => {
+  const a = bitboardFromBigInt(0b1011n);
+  t.is(a.bitCount(), 3);
+});
 
-    describe("booleanValue", function () {
-        it("should return true for non-zero bitboard", function () {
-            let a = bitboardFromBigInt(1n);
-            equal(a.isPresent(), true);
-        });
-        it("should return false for zero bitboard", function () {
-            let a = bitboardFromBigInt(0n);
-            equal(a.isPresent(), false);
-        });
-    });
+test("Bitboard isPresent should return true for non-zero bitboard", (t) => {
+  const a = bitboardFromBigInt(1n);
+  t.true(a.isPresent());
+});
 
-    describe("lastBit", function () {
-        it("should extract the last set bit", function () {
-            let a = bitboardFromBigInt(0b10100n);
-            equal(a.lastBit().value(), 0b100n);
-        });
-    });
+test("Bitboard isPresent should return false for zero bitboard", (t) => {
+  const a = bitboardFromBigInt(0n);
+  t.false(a.isPresent());
+});
 
-    describe("equals", function () {
-        it("should return true for equal bitboards", function () {
-            let a = bitboardFromBigInt(0b10100n);
-            let b = bitboardFromBigInt(0b10100n);
-            equal(a.equals(b), true);
-        });
-        it("should return false for non-equal bitboards", function () {
-            let a = bitboardFromBigInt(0b10100n);
-            let b = bitboardFromBigInt(0b10000n);
-            equal(a.equals(b), false);
-        });
-    });
+test("Bitboard lastBit should return the last set bit", (t) => {
+  const a = bitboardFromBigInt(0b10100n);
+  t.is(a.lastBit().value(), 0b100n);
+});
+
+test("Bitboard equals should return true for equal bitboards", (t) => {
+  const a = bitboardFromBigInt(0b10100n);
+  const b = bitboardFromBigInt(0b10100n);
+  t.true(a.equals(b));
+});
+
+test("Bitboard equals should return false for different bitboards", (t) => {
+  const a = bitboardFromBigInt(0b10100n);
+  const b = bitboardFromBigInt(0b10000n);
+  t.false(a.equals(b));
 });
