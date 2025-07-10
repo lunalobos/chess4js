@@ -1,145 +1,133 @@
-import { equal } from "assert";
+import test from "ava";
 import { squares } from "../src/squares.js";
 import { Move } from "../src/Move.js";
 import { pieces } from "../src/pieces.js";
-import { moveFromSquares, moveFromBitboard, moveFromUciString } from "../src/moves.js";
+import {
+  moveFromSquares,
+  moveFromBitboard,
+  moveFromUciString,
+} from "../src/moves.js";
 
-const {
-    A1, B1, C1, D1, E1, F1, G1, H1,
-    A2, B2, C2, D2, E2, F2, G2, H2,
-    A3, B3, C3, D3, E3, F3, G3, H3,
-    A4, B4, C4, D4, E4, F4, G4, H4,
-    A5, B5, C5, D5, E5, F5, G5, H5,
-    A6, B6, C6, D6, E6, F6, G6, H6,
-    A7, B7, C7, D7, E7, F7, G7, H7,
-    A8, B8, C8, D8, E8, F8, G8, H8
-} = squares;
+const { A2, E2, E3, A4, E4, A7, E7, A8, E8 } = squares;
 
-const {
-	EMPTY, WP, WN, WB, WR, WQ, WK, BP, BN, BB, BR, BQ, BK
-} = pieces;
+const { WQ } = pieces;
 
-describe("Move", function () {
-    describe("fromSquares", function () {
-        it("should create a Move with correct origin and target", function () {
-            let move = Move.fromSquares(A2, A4);
-            equal(move.origin(), A2);
-            equal(move.target(), A4);
-            equal(move.promotionPiece().name(), "EMPTY");
-        });
-        it("should create a Move with promotion piece", function () {
-            let move = Move.fromSquares(A7, A8, WQ);
-            equal(move.origin(), A7);
-            equal(move.target(), A8);
-            equal(move.promotionPiece(), WQ);
-        });
-    });
-
-    describe("fromUciString", function () {
-        it("should parse a normal move", function () {
-            let move = Move.fromUciString("e2e4", true);
-            equal(move.origin().name(), "E2");
-            equal(move.target().name(), "E4");
-            equal(move.promotionPiece().name(), "EMPTY");
-        });
-        it("should parse a promotion move for white", function () {
-            let move = Move.fromUciString("e7e8q", true);
-            equal(move.origin().name(), "E7");
-            equal(move.target().name(), "E8");
-            equal(move.promotionPiece().name(), "WQ");
-        });
-        it("should parse a promotion move for black", function () {
-            let move = Move.fromUciString("a2a1n", false);
-            equal(move.origin().name(), "A2");
-            equal(move.target().name(), "A1");
-            equal(move.promotionPiece().name(), "BN");
-        });
-        it("should throw error for invalid UCI string", function () {
-            let threw = false;
-            try {
-                Move.fromUciString("invalid", true);
-            } catch (e) {
-                threw = true;
-            }
-            equal(threw, true);
-        });
-    });
-
-    describe("toString", function () {
-        it("should return correct UCI string for normal move", function () {
-            let move = Move.fromSquares(E2, E4);
-            equal(move.toString(), "e2e4");
-        });
-        it("should return correct UCI string for promotion move", function () {
-            let move = Move.fromSquares(E7, E8, WQ);
-            equal(move.toString(), "e7e8q");
-        });
-    });
-
-    describe("equals", function () {
-        it("should return true for equal moves", function () {
-            let m1 = Move.fromSquares(E2, E4);
-            let m2 = Move.fromSquares(E2, E4);
-            equal(m1.equals(m2), true);
-        });
-        it("should return false for different moves", function () {
-            let m1 = Move.fromSquares(E2, E4);
-            let m2 = Move.fromSquares(E2, E3);
-            equal(m1.equals(m2), false);
-        });
-        it("should return false when compared with non-Move", function () {
-            let m1 = Move.fromSquares(E2, E4);
-            equal(m1.equals(null), false);
-            equal(m1.equals({}), false);
-        });
-    });
+test("Move fromSquares should create a Move with correct origin and target", (t) => {
+  const move = Move.fromSquares(A2, A4);
+  t.is(move.origin(), A2);
+  t.is(move.target(), A4);
+  t.is(move.promotionPiece().name(), "EMPTY");
 });
 
-describe("Move factory", function () {
-    describe("moveFromSquares", function () {
-        it("should return the same Move instance for the same origin, target, and promotion", function () {
-            let m1 = moveFromSquares(E2, E4);
-            let m2 = moveFromSquares(E2, E4);
-            equal(m1, m2);
-        });
-        it("should return a Move with correct origin and target", function () {
-            let move = moveFromSquares(A2, A4);
-            equal(move.origin(), A2);
-            equal(move.target(), A4);
-        });
-        it("should return a Move with correct promotion piece", function () {
-            let move = moveFromSquares(A7, A8, WQ);
-            equal(move.promotionPiece(), WQ);
-        });
-    });
+test("Move fromSquares should create a Move with promotion piece", (t) => {
+  const move = Move.fromSquares(A7, A8, WQ);
+  t.is(move.origin(), A7);
+  t.is(move.target(), A8);
+  t.is(move.promotionPiece().name(), "WQ");
+});
 
-    describe("moveFromUciString", function () {
-        it("should return the same Move instance as moveFromSquares for normal move", function () {
-            let m1 = moveFromUciString("e2e4", true);
-            let m2 = moveFromSquares(E2, E4);
-            equal(m1, m2);
-        });
-        it("should return the same Move instance as moveFromSquares for promotion move", function () {
-            let m1 = moveFromUciString("e7e8q", true);
-            let m2 = moveFromSquares(E7, E8, WQ);
-            equal(m1, m2);
-        });
-        it("should throw error for invalid UCI string", function () {
-            let threw = false;
-            try {
-                moveFromUciString("invalid", true);
-            } catch (e) {
-                threw = true;
-            }
-            equal(threw, true);
-        });
-    });
+test("Move fromUciString should parse a normal move", (t) => {
+  const move = Move.fromUciString("e2e4", true);
+  t.is(move.origin().name(), "E2");
+  t.is(move.target().name(), "E4");
+  t.is(move.promotionPiece().name(), "EMPTY");
+});
 
-    describe("moveFromBitboard", function () {
-        it("should return the same Move instance as moveFromSquares", function () {
-            let move = moveFromSquares(E2, E4);
-            let move2 = moveFromBitboard(move.moveBitboard(), move.origin());
-            equal(move, move2);
-        });
-    });
+test("Move fromUciString should parse a promotion move", (t) => {
+  const move = Move.fromUciString("e7e8q", true);
+  t.is(move.origin().name(), "E7");
+  t.is(move.target().name(), "E8");
+  t.is(move.promotionPiece().name(), "WQ");
+});
+
+test("Move fromUciString should parse a promotion move for black", (t) => {
+  const move = Move.fromUciString("a2a1n", false);
+  t.is(move.origin().name(), "A2");
+  t.is(move.target().name(), "A1");
+  t.is(move.promotionPiece().name(), "BN");
+});
+
+test("Move fromUciString should throw error for invalid UCI string", (t) => {
+  let threw = false;
+  try {
+    Move.fromUciString("invalid", true);
+  } catch (e) {
+    threw = true;
+  }
+  t.true(threw);
+});
+
+test("Move toString should return correct UCI string for normal move", (t) => {
+  const move = Move.fromSquares(E2, E4);
+  t.is(move.toString(), "e2e4");
+});
+
+test("Move toString should return correct UCI string for promotion move", (t) => {
+  const move = Move.fromSquares(E7, E8, WQ);
+  t.is(move.toString(), "e7e8q");
+});
+
+test("Move equals should return true for equal moves", (t) => {
+  const m1 = Move.fromSquares(E2, E4);
+  const m2 = Move.fromSquares(E2, E4);
+  t.true(m1.equals(m2));
+});
+
+test("Move equals should return false for different moves", (t) => {
+  const m1 = Move.fromSquares(E2, E4);
+  const m2 = Move.fromSquares(E2, E3);
+  t.false(m1.equals(m2));
+});
+
+test("Move equals should return false when compared with non-Move", (t) => {
+  let m1 = Move.fromSquares(E2, E4);
+  t.false(m1.equals(null));
+  t.false(m1.equals({}));
+});
+
+test("Move factory moveFromSquares should return the same Move instance for the same origin, target, and promotion", (t) => {
+  const m1 = moveFromSquares(E2, E4);
+  const m2 = moveFromSquares(E2, E4);
+  t.is(m1, m2);
+});
+
+test("Move factory moveFromSquares should return a Move with correct origin, target, and promotion", (t) => {
+  const move = moveFromSquares(A2, A4);
+  t.is(move.origin(), A2);
+  t.is(move.target(), A4);
+});
+
+test("Move factory moveFromSquares should return a Move with correct origin and targete", (t) => {
+  const move = moveFromSquares(A7, A8, WQ);
+  t.is(move.origin(), A7);
+  t.is(move.target(), A8);
+  t.is(move.promotionPiece(), WQ);
+});
+
+test("Move factory moveFromUciString should return the same Move instance as moveFromSquares for normal move", (t) => {
+  const m1 = moveFromUciString("e2e4", true);
+  const m2 = moveFromSquares(E2, E4);
+  t.is(m1, m2);
+});
+
+test("Move factory moveFromUciString should return the same Move instance as moveFromSquares for promotion move", (t) => {
+  const m1 = moveFromUciString("e7e8q", true);
+  const m2 = moveFromSquares(E7, E8, WQ);
+  t.is(m1, m2);
+});
+
+test("Move factory moveFromUciString should throw error for invalid UCI string", (t) => {
+  let threw = false;
+  try {
+    moveFromUciString("invalid", true);
+  } catch (e) {
+    threw = true;
+  }
+  t.true(threw);
+});
+
+test("move factory moveFromBitboard should return the same Move instance as moveFromSquares", (t) => {
+  const move = moveFromSquares(E2, E4);
+  const move2 = moveFromBitboard(move.moveBitboard(), move.origin());
+  t.is(move, move2);
 });

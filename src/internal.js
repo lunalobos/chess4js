@@ -258,3 +258,12 @@ function formatUnsignedLong0(val, shift, buf, offset, len) {
 }
 
 export const uciRegex = /(?<colOrigin>[a-h])(?<rowOrigin>[1-8])(?<colTarget>[a-h])(?<rowTarget>[1-8])(?<promotion>[nbrq])?/;
+
+/**
+ * Returns the column index for a given column letter 0-based.
+ * @param {string} col 
+ * @returns {number} the column index (0 for 'a', 1 for 'b', ..., 7 for 'h')
+ */
+export function getColIndex(col) {
+	return col.charCodeAt(0) - "a".charCodeAt(0);
+}

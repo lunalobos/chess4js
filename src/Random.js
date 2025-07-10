@@ -1,4 +1,4 @@
-
+import { Bean } from "./Bean.js"
 /**
  * A random number generator.
  */

@@ -4,7 +4,7 @@
   "description": "A chess library for javascript",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "ava"
   },
   "keywords": [
     "chess"
@@ -17,6 +17,6 @@
   "license": "Apache-2.0",
   "type": "module",
   "devDependencies": {
-    "mocha": "^11.7.1"
+    "ava": "^5.3.1"
   }
 }
