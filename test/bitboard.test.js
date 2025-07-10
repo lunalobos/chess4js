@@ -1,5 +1,4 @@
 import { equal } from "assert";
-import { Bitboard } from "../src/Bitboard.js";
 import { squares } from "../src/squares.js";
 import {
     bitboardFromBigInt,
