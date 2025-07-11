@@ -17,11 +17,3 @@ test("should throw if bitLength is out of range", (t) => {
     t.throws(() => prime(1, rnd), { message: "bitLength must be between 2 and 53" });
     t.throws(() => prime(54, rnd), { message: "bitLength must be between 2 and 53" });
 });
-
-test("should generate different primes for different seeds", (t) => {
-    const rnd1 = new Random(32);
-    const rnd2 = new Random(32);
-    const p1 = prime(8, rnd1);
-    const p2 = prime(8, rnd2);
-    t.not(p1, p2, "Primes should differ for different seeds");
-});

@@ -32,11 +32,13 @@ import {
   BQ,
   BK,
 } from "./pieces.js";
+import { Bean } from "./Bean.js";
+
 export class MatrixUtil extends Bean {
   static logger = getLogger("MatrixUtil");
 
-  constructor(name) {
-    super(name);
+  constructor() {
+    super("MatrixUtil");
 
     /**
      *
@@ -1231,16 +1233,16 @@ export class MatrixUtil extends Bean {
      * @type {Bitboard[][]}
      */
     this.castleMask = [
-      [scbMask, lcbMask],
-      [scwMask, lcwMask],
+      [this.scbMask, this.lcbMask],
+      [this.scwMask, this.lcwMask],
     ];
 
     /**
      * @type {Square[][]}
      */
     this.castleSquares = [
-      [scbSquares, lcbSquares],
-      [scwSquares, lcwSquares],
+      [this.scbSquares, this.lcbSquares],
+      [this.scwSquares, this.lcwSquares],
     ];
 
     /**
