@@ -96,6 +96,26 @@ export class Bitboard {
     }
 
     /**
+     * Shifts the bits of the bitboard to the left by the specified amount.
+     * 
+     * @param {number} shift - The number of bits to shift left.
+     * @return {Bitboard} A new Bitboard representing the shifted value.
+     */
+    shiftLeft(shift) {
+        return new Bitboard(this.value() << BigInt(shift));
+    }
+
+    /**
+     * Shifts the bits of the bitboard to the right by the specified amount.
+     * 
+     * @param {number} shift - The number of bits to shift right.
+     * @return {Bitboard} A new Bitboard representing the shifted value.
+     */
+    shiftRight(shift) {
+        return new Bitboard(this.value() >> BigInt(shift));
+    }
+
+    /**
      * Counts the number of set bits (1s) in the bitboard.
      *
      * @return {number} The number of set bits.
