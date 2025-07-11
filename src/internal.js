@@ -46,7 +46,7 @@ function mask32() {
  * @param {number} i
  * @returns {number}
  */
-function numberOfTrailingZeros(i) {
+export function numberOfTrailingZeros(i) {
 	// HD, Count trailing 0's
 	i = ~i & (i - 1);
 	if (i <= 0) return i & 32;

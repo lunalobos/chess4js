@@ -1,8 +1,10 @@
 import { Bean } from "./Bean.js"
+import { getLogger } from "./loggers.js"
 /**
  * A random number generator.
  */
 export class Random extends Bean{
+    static logger = getLogger("Random");
     #maxValue;
     constructor(bitLength = 16){
         super("Random");
