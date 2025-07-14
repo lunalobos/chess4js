@@ -171,3 +171,10 @@ test("VisibleMetrics computeVisible should return correct bitboard for bishop mo
 
   t.is(result.value(), bitboardFromSquares(F1, H3, F3, E4, D5, C6, B7).value());
 });
+
+
+test("visibleSquaresWhitePawn returns correct moves", t => {
+  const friends = bitboardFromSquares(E4, C3);
+  const result = visibleMetrics.visibleSquaresWhitePawn(D3.index(), friends);
+  t.is(result.value(), matrixUtil.whitePawnCaptureMoves[D3.index()].and(friends.not()).value());
+});

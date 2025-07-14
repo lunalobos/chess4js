@@ -42,7 +42,6 @@ export class Bitboard {
         /**
          * Internal value of this bitboard, masked to 64 bits.
          * @type {BigInt}
-         * @private
          */
         const v = value & mask;
 
