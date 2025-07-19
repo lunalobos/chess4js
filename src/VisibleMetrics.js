@@ -4,13 +4,11 @@ import { getLogger } from "./loggers.js";
 import { numberOfTrailingZeros, numberOfLeadingZeros } from "./internal.js";
 import { MatrixUtil } from "./MatrixUtil.js";
 import { bitboardFromBigInt } from "./bitboards.js";
-import { Random } from "./Random.js";
-import { prime } from "./primes.js";
+import { bishopNumbers, rookNumbers } from "./magicNumbers.js";
 
 export class VisibleMetrics extends Bean {
 	static logger = getLogger("VisibleMetrics");
 	#matrixUtil;
-	#random;
 	/**
 	 * @type {Array<Array<Array<Bitboard>>>}
 	 */
@@ -34,12 +32,10 @@ export class VisibleMetrics extends Bean {
 	/**
 	 *
 	 * @param {MatrixUtil} matrixUtil
-	 * @param {Random} random
 	 */
-	constructor(matrixUtil, random) {
+	constructor(matrixUtil) {
 		super("VisibleMetrics");
 		this.#matrixUtil = matrixUtil;
-		this.#random = random;
 
 		this.#visibleOptions = new Array(64);
 		for (let i = 0; i < 64; i++) {
@@ -153,6 +149,8 @@ export class VisibleMetrics extends Bean {
 			return moves;
 		};
 
+		VisibleMetrics.logger.debug("Ok");
+
 		// calculate magicNumbers
 		const rookSize = new Size(20);
 		const bishopSize = new Size(18);
@@ -172,14 +170,14 @@ export class VisibleMetrics extends Bean {
 			rookHasher,
 			rookSize.capacity,
 			this.#matrixUtil.rookDirections,
-			this.#random
+			rookNumbers
 		);
 		this.#bishopMagicNumbers = new MagicNumbers(
 			combinator,
 			bishopHasher,
 			bishopSize.capacity,
 			this.#matrixUtil.bishopDirections,
-			this.#random
+			bishopNumbers
 		);
 		this.#rookMagicNumbers.calculate(this.#matrixUtil, this.computeVisible);
 		this.#bishopMagicNumbers.calculate(this.#matrixUtil, this.computeVisible);
@@ -469,6 +467,31 @@ class BitIterator {
 	}
 }
 
+class ListIterator {
+
+	#pointer;
+	#list;
+	#size;
+
+	/**
+	 * 
+	 * @param {Array<Object>} list 
+	 */
+	constructor(list){
+		this.#list = list;
+		this.#pointer = 0;
+		this.#size = this.#list.length;
+	}
+
+	next(){
+		return this.#list[this.#pointer++];
+	}
+
+	done(){
+		return this.#pointer === this.#size;
+	}
+}
+
 class Combinator extends Bean {
 	static logger = getLogger("Combinator");
 	/**
@@ -514,9 +537,10 @@ class Combinator extends Bean {
 		const list = this.#squaresList(square, directionsIndexes);
 		const combinationsSize = 1 << list.length;
 		const combinationsList = new Map();
+		
 		for (let combination = 0; combination < combinationsSize; combination++) {
 			const bitIterator = new BitIterator(combination);
-			const listIterator = list[Symbol.iterator]();
+			const listIterator = new ListIterator(list);
 			let bitboard = bitboardFromBigInt(0n);
 			while (bitIterator.hasNext() && !listIterator.done()) {
 				bitboard = bitboard.or(
@@ -525,12 +549,13 @@ class Combinator extends Bean {
 					)
 				);
 			}
-			combinationsList.set(bitboard.value(), bitboard);
+			combinationsList.set(combination, bitboard);
 		}
 		const output = [];
 		for (let value of combinationsList.values()) {
 			output.push(value);
 		}
+		
 		return output;
 	}
 }
@@ -645,7 +670,7 @@ class FastFailBitboardMap {
 		if (index < 0 || index >= this.#map.length) {
 			return false;
 		} else {
-			return this.#map[index] != null;
+			return new Boolean(this.#map[index]).valueOf();
 		}
 	}
 
@@ -657,6 +682,7 @@ class FastFailBitboardMap {
 }
 
 class MagicNumbers {
+	static logger = getLogger("MagicNumbers");
 	/**
 	 * @type {Combinator}
 	 */
@@ -682,9 +708,9 @@ class MagicNumbers {
 	 */
 	#directionIndexes;
 	/**
-	 * @type {Random}
+	 * @type {Array<number>}
 	 */
-	#random;
+	#numbers;
 
 	/**
 	 * 
@@ -692,15 +718,15 @@ class MagicNumbers {
 	 * @param {MagicHasher} hasher 
 	 * @param {number} capacity 
 	 * @param {Array<number>} directionIndexes 
-	 * @param {Random} random 
+	 * @param {Array<number>} numbers 
 	 */
-	constructor(combinator, hasher, capacity, directionIndexes, random) {
+	constructor(combinator, hasher, capacity, directionIndexes, numbers) {
 		this.#combinator = combinator;
 		this.#hasher = hasher;
 		this.#perfectHashMaps = new Array(64);
 		this.#map = new FastFailBitboardMap(capacity);
 		this.#directionIndexes = directionIndexes;
-		this.#random = random;
+		this.#numbers = numbers;
 	}
 
 	/**
@@ -715,12 +741,15 @@ class MagicNumbers {
 				square,
 				this.#directionIndexes
 			);
+			
 			while (true) {
-				let magicNumber = BigInt(prime(32, this.#random));
+				let magicNumber = this.#numbers[square];
+				
 				if (magicNumber < 0n) {
 					magicNumber = -magicNumber;
 				}
 				magicNumber = bitboardFromBigInt(magicNumber);
+				
 				this.#map.clear();
 				let isMagic = true;
 				for (let combination of combinations) {
@@ -742,7 +771,8 @@ class MagicNumbers {
 					}
 				}
 				if (isMagic) {
-					magicNumbers.put(square, magicNumber);
+					MagicNumbers.logger.debug(`found magic number ${magicNumber.value()} for square ${square}`);
+					magicNumbers.set(square, magicNumber);
 					this.#perfectHashMaps[square] = this.#map.toArray();
 					break;
 				}

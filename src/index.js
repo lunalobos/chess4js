@@ -13,3 +13,8 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+import { MatrixUtil } from "./MatrixUtil.js";
+import { VisibleMetrics } from "./VisibleMetrics.js";
+
+let matrixUtil = new MatrixUtil();
+let visibleMetrics = new VisibleMetrics(matrixUtil);

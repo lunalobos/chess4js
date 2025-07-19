@@ -3,7 +3,6 @@ import { squares } from "../src/squares.js";
 import { bitboardFromSquares } from "../src/bitboards.js";
 import { VisibleMetrics } from "../src/VisibleMetrics.js";
 import { MatrixUtil } from "../src/MatrixUtil.js";
-import { Random } from "../src/Random.js";
 
 const {
   A1,
@@ -49,11 +48,17 @@ const {
   F3,
   E4,
   D5,
-  C6
+  C6,
 } = squares;
 const matrixUtil = new MatrixUtil();
-const random = new Random();
-const visibleMetrics = new VisibleMetrics(matrixUtil, random);
+let visibleMetrics = null;
+
+test.before("create visible metrics", async (t) => {
+  await new Promise((resolve, reject) => {
+    visibleMetrics = new VisibleMetrics(matrixUtil);
+    resolve();
+  }).then(() => t.pass());
+});
 
 test("VisibleMetrics computeVisible should return correct bitboard for queen moves", (t) => {
   const friends = bitboardFromSquares(A1, B3);
@@ -93,7 +98,7 @@ test("VisibleMetrics computeVisible should return correct bitboard for queen mov
 test("VisibleMetrics computeVisible should return correct bitboard for rook moves", (t) => {
   const friends = bitboardFromSquares(A1, B2);
   const enemies = bitboardFromSquares(C3, D4);
-
+  
   const result = visibleMetrics.computeVisible(
     A1.index(),
     matrixUtil.rookDirections,
@@ -160,6 +165,7 @@ test("VisibleMetrics computeVisible should return correct bitboard for bishop mo
     G7,
     G7
   );
+  
 
   const result = visibleMetrics.computeVisible(
     G2.index(),
@@ -172,9 +178,11 @@ test("VisibleMetrics computeVisible should return correct bitboard for bishop mo
   t.is(result.value(), bitboardFromSquares(F1, H3, F3, E4, D5, C6, B7).value());
 });
 
-
-test("visibleSquaresWhitePawn returns correct moves", t => {
+test("visibleSquaresWhitePawn returns correct moves", (t) => {
   const friends = bitboardFromSquares(E4, C3);
   const result = visibleMetrics.visibleSquaresWhitePawn(D3.index(), friends);
-  t.is(result.value(), matrixUtil.whitePawnCaptureMoves[D3.index()].and(friends.not()).value());
+  t.is(
+    result.value(),
+    matrixUtil.whitePawnCaptureMoves[D3.index()].and(friends.not()).value()
+  );
 });

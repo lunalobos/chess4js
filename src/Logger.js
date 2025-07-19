@@ -56,7 +56,7 @@ export class Logger {
      * @returns {string}
      */
     #format(msg, level) {
-        return `[${level}] ${new Date().toISOString()} - ${this.#name} : ${msg}`;
+        return `[${level.toUpperCase()}] ${new Date().toISOString()} - ${this.#name} : ${msg}`;
     }
 
     /**
