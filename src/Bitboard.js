@@ -42,9 +42,8 @@ export class Bitboard {
         /**
          * Internal value of this bitboard, masked to 64 bits.
          * @type {BigInt}
-         * @private
          */
-        const v = value & mask;
+        const v = BigInt.asUintN(64, value);
 
         /**
          * Returns the internal value of this bitboard.
@@ -93,6 +92,26 @@ export class Bitboard {
      */
     not() {
         return new Bitboard(~this.value());
+    }
+
+    /**
+     * Shifts the bits of the bitboard to the left by the specified amount.
+     * 
+     * @param {number} shift - The number of bits to shift left.
+     * @return {Bitboard} A new Bitboard representing the shifted value.
+     */
+    shiftLeft(shift) {
+        return new Bitboard(this.value() << BigInt(shift));
+    }
+
+    /**
+     * Shifts the bits of the bitboard to the right by the specified amount.
+     * 
+     * @param {number} shift - The number of bits to shift right.
+     * @return {Bitboard} A new Bitboard representing the shifted value.
+     */
+    shiftRight(shift) {
+        return new Bitboard(this.value() >> BigInt(shift));
     }
 
     /**
