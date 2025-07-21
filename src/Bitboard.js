@@ -43,7 +43,7 @@ export class Bitboard {
          * Internal value of this bitboard, masked to 64 bits.
          * @type {BigInt}
          */
-        const v = value & mask;
+        const v = BigInt.asUintN(64, value);
 
         /**
          * Returns the internal value of this bitboard.
